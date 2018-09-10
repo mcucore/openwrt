@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dnsmasq
-PKG_VERSION:=2.80test2
-PKG_RELEASE:=4
+PKG_VERSION:=2.80test5
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=http://thekelleys.org.uk/dnsmasq/test-releases
-PKG_HASH:=e731666094699afcbad947f89f7f8afbf92e5ddc3c915459d4936159d81116f0
+PKG_HASH:=e17a4430ead6ec3f5710a55888ed261d9c19281954be5356e9f3a1171990f0d6
 
 PKG_LICENSE:=GPL-2.0
 PKG_LICENSE_FILES:=COPYING
@@ -53,6 +53,7 @@ $(call Package/dnsmasq/Default)
   TITLE += (with DHCPv6 support)
   DEPENDS+=@IPV6
   VARIANT:=dhcpv6
+  PROVIDES:=dnsmasq
 endef
 
 define Package/dnsmasq-full
@@ -62,6 +63,7 @@ $(call Package/dnsmasq/Default)
 	+PACKAGE_dnsmasq_full_ipset:kmod-ipt-ipset \
 	+PACKAGE_dnsmasq_full_conntrack:libnetfilter-conntrack
   VARIANT:=full
+  PROVIDES:=dnsmasq
 endef
 
 define Package/dnsmasq/description
@@ -122,7 +124,8 @@ Package/dnsmasq-full/conffiles = $(Package/dnsmasq/conffiles)
 TARGET_CFLAGS += -ffunction-sections -fdata-sections
 TARGET_LDFLAGS += -Wl,--gc-sections
 
-COPTS = $(if $(CONFIG_IPV6),,-DNO_IPV6)
+COPTS = -DHAVE_UBUS \
+	$(if $(CONFIG_IPV6),,-DNO_IPV6)
 
 ifeq ($(BUILD_VARIANT),nodhcpv6)
 	COPTS += -DNO_DHCP6
